@@ -42,6 +42,25 @@ fit.contrast(t2, "dose2", c(2,-1,-1))
 TukeyHSD(t2)
 rm(list = ls())
 #q3
+soy <- read.csv("https://raw.githubusercontent.com/Kakashi-sensei/STAT_587_2020_fall_exam2/main/soy.csv", header=TRUE)
+t3 <- aov(PEP ~ Treatment, data = soy)
+summary(t3)
+### Normality assumption
+library(car)
+qqPlot(t3$residuals)
+str(t3)
+### equal variance
+##residual plots
+#residual by X plot
+plot(soy$Treatment, t3$residuals)
+#residual by predicted plot
+plot(t3$fitted, t3$residuals)
+### ration of SDs/Variances
+sds <- tapply(soy$PEP, soy$Treatment, sd)
+sds
+2.82842712/0.07071068
+max(sds)/min(sds)
+
 
 
 ```
