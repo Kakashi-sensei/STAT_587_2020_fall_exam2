@@ -1,0 +1,49 @@
+---
+title: "Exam2"
+author: "Tianqi(Tim)"
+date: "10/12/2020"
+output: html_document
+---
+
+```{r}
+#Q1
+cws <- read.csv("https://raw.githubusercontent.com/Kakashi-sensei/STAT_587_2020_fall_exam2/main/CWS.csv", header=TRUE)
+str(cws)
+##check the normality of the difference
+cws$difference <- cws$IHC - cws$Bioassay
+library(car)
+qqPlot(cws$difference, pch = 20)
+
+lnIHC <- log(cws$IHC)
+lnBio <- log(cws$Bioassay)
+t.test(lnIHC, lnBio, paired=TRUE,conf.level = 0.99)
+
+exp(0.003526165)
+exp(0.055762664)
+exp(0.02964441)
+rm(list = ls())
+
+#q2
+kudzu <- read.csv("https://raw.githubusercontent.com/Kakashi-sensei/STAT_587_2020_fall_exam2/main/kudzu.csv", header=TRUE)
+#change the variable of dose from number to factor
+kudzu$dose2 <- as.factor(kudzu$dose)
+str(kudzu)
+bartlett.test(density ~ dose2, data = kudzu)
+t2 <- aov(density ~ dose2, data = kudzu)
+summary(t2)
+#pooled t-test for q2b
+kudzu2 <- read.csv("https://raw.githubusercontent.com/Kakashi-sensei/STAT_587_2020_fall_exam2/main/kudzu2.csv", header=TRUE)
+kudzu2$dose2 <- as.factor(kudzu2$dose)
+t.test(density~dose2, data=kudzu2)
+#  Linear Combinations for q2b
+library(gmodels)
+fit.contrast(t2, "dose2", c(2,-1,-1))
+# q2c
+TukeyHSD(t2)
+rm(list = ls())
+#q3
+
+
+```
+
+
