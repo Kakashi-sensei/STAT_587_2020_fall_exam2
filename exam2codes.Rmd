@@ -13,14 +13,9 @@ str(cws)
 cws$difference <- cws$IHC - cws$Bioassay
 library(car)
 qqPlot(cws$difference, pch = 20)
-
 lnIHC <- log(cws$IHC)
 lnBio <- log(cws$Bioassay)
-t.test(lnIHC, lnBio, paired=TRUE,conf.level = 0.99)
-
-exp(0.003526165)
-exp(0.055762664)
-exp(0.02964441)
+t.test(lnIHC, lnBio, paired=TRUE,conf.level = 0.95)
 rm(list = ls())
 
 #q2
@@ -38,12 +33,14 @@ t.test(density~dose2, data=kudzu2)
 #  Linear Combinations for q2b
 library(gmodels)
 fit.contrast(t2, "dose2", c(2,-1,-1))
-# q2c
+###q2c###
 TukeyHSD(t2)
 rm(list = ls())
+
 #q3
 soy <- read.csv("https://raw.githubusercontent.com/Kakashi-sensei/STAT_587_2020_fall_exam2/main/soy.csv", header=TRUE)
-t3 <- aov(PEP ~ Treatment, data = soy)
+soy$Tre2 <- as.factor(soy$Treatment)
+t3 <- aov(PEP ~ Tre2, data = soy)
 summary(t3)
 ### Normality assumption
 library(car)
@@ -52,7 +49,7 @@ str(t3)
 ### equal variance
 ##residual plots
 #residual by X plot
-plot(soy$Treatment, t3$residuals)
+plot(soy$Tre2, t3$residuals)
 #residual by predicted plot
 plot(t3$fitted, t3$residuals)
 ### ration of SDs/Variances
@@ -60,9 +57,47 @@ sds <- tapply(soy$PEP, soy$Treatment, sd)
 sds
 2.82842712/0.07071068
 max(sds)/min(sds)
+#q3c
+install.packages("multcomp")
+library(multcomp)
+pairs <- glht(t3, linfct =mcp(Tre2 ="Tukey"))
+###hypothesis test
+summary(pairs, test= adjusted("bonferroni"))
+library(gmodels)
+fit.contrast(t3, "Tre2", c(1,1,-1,-1), conf.int=0.95)
+###Q3d
+confint(pairs, calpha = qt(1-0.05/(2*choose(4,2)), 4))
+rm(list = ls())
 
+#Q4
+lip <- read.csv("https://raw.githubusercontent.com/Kakashi-sensei/STAT_587_2020_fall_exam2/main/lipids.csv", header=TRUE)
+str(lip)
+lip$diet2 <- as.factor(lip$diet)
+t4 <- aov(lipids ~ diet2, data = lip)
+summary(t4)
+##Q4b
+library(car)
+qqPlot(t4$residuals)
+plot(t4$fitted, t4$residuals)
+sds <- tapply(lip$lipids, lip$diet, sd)
+sds
+max(sds)/min(sds)
+#Q4c
+library(gmodels)
+fit.contrast(t4, "diet2", c(1/3, 1/3, 1/3, -1), conf.int=0.90)
+#4d
+library(multcomp)
+pairs <- glht(t4, linfct = mcp(diet2 = "Tukey"))
+summary(pairs, test = adjusted("bonferroni"))
+cld(summary(pairs, test = adjusted("bonferroni")))
+
+rm(list = ls())
 
 
 ```
+
+
+
+
 
 
